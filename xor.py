@@ -23,7 +23,7 @@ def learn_xor():
     learning_rate = 1
     
     n_inputs = 2
-    n_hiddens = 3
+    n_hiddens = 2
     n_outputs = 1
     
     l1 = create_layer(n_inputs,n_hiddens)
