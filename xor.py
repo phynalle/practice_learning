@@ -14,15 +14,13 @@ def sig(x):
     return 1 / (1 + exp(-x))
 
 def create_layer(n_inputs, n_outputs):
-    # return [[2 * random() -1 for _ in xrange(n_inputs)] for _ in xrange(n_outputs)]
-    return [[random() for _ in xrange(n_inputs)] for _ in xrange(n_outputs)]
-    
+    return [[2 * random() -1 for _ in xrange(n_inputs)] for _ in xrange(n_outputs)]
 
 def cost(t, y): 
     return 0.5 * (t - y) * (t - y)
 
 def learn_xor():
-    learning_rate = 0.01
+    learning_rate = 1
     
     n_inputs = 2
     n_hiddens = 3
@@ -38,35 +36,43 @@ def learn_xor():
     
     def _train(xs, ys):
         assert(len(xs) == len(ys))
+
+        max_steps = 20000
+        step = 0
         n_trains = len(xs)
-        while True:
+        while step < max_steps:
+            error = 0
             for t in xrange(n_trains):
                     o1, o2, pred_y = _calc(xs[t])
-                    if learning_rate >= cost(ys[t], pred_y):
-                            continue
+                    error += cost(ys[t], pred_y)
+
+                    # calc gradient
+                    g = [o2[i] * (1 - o2[i]) * (ys[t] - o2[i]) for i in xrange(n_outputs)]
 
                     # update weights of output layer 
                     for i in xrange(n_outputs):
                             for j in xrange(n_hiddens):
-                                    l2[i][j] += learning_rate * o2[i] * (1 - o2[i]) * (ys[t] - o2[i]) * o1[j]
+                                    l2[i][j] += learning_rate * g[i] * o1[j]
                     
                     # update weights of hidden layer
                     for i in xrange(n_hiddens):
                             for j in xrange(n_inputs):
                                     s = 0
                                     for k in xrange(n_outputs):
-                                            s += l2[k][i] * o2[k] * (1 - o2[k]) * (ys[t] - o2[k]) * xs[t][j]
+                                            s += l2[k][i] * g[k] * xs[t][j]
                                     l1[i][j] += learning_rate * o1[i] * (1 - o1[i]) * s
-            ok = []
-            for t in xrange(n_trains):
-                    _, _, pred_y = _calc(xs[t])
-                    ok.append(learning_rate >= cost(ys[t], pred_y))
-            if all(ok):
-                    break
+            step += 1
+            if step % 1000 == 0:
+                print 'Step: {}, Error: {}'.format(step, error)
                 
     _train([[0, 0], [0, 1], [1, 0], [1, 1]], [0, 1, 1, 0])
     
-    print l1
-    print l2
+    def _print_result(input):
+        print '({}, {}): {}'.format(input[0], input[1], _calc(input)[2])
+    print '\n--- Print Results ---'
+    _print_result([0, 0])
+    _print_result([0, 1])
+    _print_result([1, 0])
+    _print_result([1, 1])
 learn_xor()
     
