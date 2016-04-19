@@ -63,9 +63,6 @@ def learn_xor():
                     ok.append(learning_rate >= cost(ys[t], pred_y))
             if all(ok):
                     break
-        for t in xrange(n_trains):
-                    _, _, pred_y = _calc(xs[t])
-                    print t, ys[t], pred_y, cost(ys[t], pred_y)
                 
     _train([[0, 0], [0, 1], [1, 0], [1, 1]], [0, 1, 1, 0])
     
